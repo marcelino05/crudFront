@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-Mz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprendendo LocalStorage </title>
+</head>
+
+<body>
+<h1>Aprendendo localStorage</h1>
+</body>
+<script>
+  const clientes = [
+  {
+    nome: "Andre",
+    saldo: 2500
+  }, {
+    nome: "Vitor",
+    saldo: 5300
+  }, {
+    nome: "Junior",
+    saldo:0 
+  },
+    {
+      nome: "Raimundo",
+      saldo: 1500
+    },
+    {
+      nome: "Ângelo",
+      saldo: 6730
+    }
+  ]
+  
+  localStorage.setItem("clientes", JSON.stringify(clientes))
+  
+  const dados = JSON.parse(localStorage.getItem("clientes"))
+  dados.filter(d=> d.saldo > 200).forEach(p=>{
+     console.log(p.nome)
+  } )
+  
+</script>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Usuários</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .container {
+      width: 95%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    h2 {
+      margin-top: 0;
+      color: #2c5364;
+    }
+    
+    .card {
+      background: #f5f7fa;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #2c5364;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    
+    button:hover {
+      background: #203a43;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    li {
+      background: white;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="container">
+    
+    <!-- ADICIONAR -->
+    <div class="card">
+      <h2>Adicionar Usuário</h2>
+      
+      <input type="text" id="nameUser" placeholder="Nome">
+      <input type="email" id="emailUser" placeholder="Email">
+      <input type="number" id="numberUser" placeholder="Número (opcional)">
+      
+      <button onclick="adicionarUsuario()">Salvar Usuário</button>
+    </div>
+    
+    <!-- LISTA -->
+    <div class="card">
+      <h2>Lista de Usuários</h2>
+      
+      <button onclick="buscarUsuarios()">Atualizar Lista</button>
+      <ul id="lista"></ul>
+    </div>
+    
+  </div>
+  
+  <script>
+    const API_URL = "https://crud-glwt.onrender.com/venda"
+    
+    async function adicionarUsuario() {
+      try {
+        const nameUser = document.getElementById("nameUser").value.trim()
+        const emailUser = document.getElementById("emailUser").value.trim()
+        const numberUser = document.getElementById("numberUser").value
+        
+        if (!nameUser || !emailUser) {
+          alert("Nome e Email são obrigatórios!")
+          return
+        }
+        
+        const resposta = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            nameUser,
+            emailUser,
+            numberUser: numberUser ? Number(numberUser) : undefined
+          })
+        })
+        
+        if (!resposta.ok) {
+          throw new Error("Erro ao adicionar usuário")
+        }
+        
+        alert("Usuário cadastrado com sucesso!")
+        
+        document.getElementById("nameUser").value = ""
+        document.getElementById("emailUser").value = ""
+        document.getElementById("numberUser").value = ""
+        
+        buscarUsuarios()
+        
+      } catch (erro) {
+        alert("Erro: " + erro.message)
+      }
+    }
+    
+    async function buscarUsuarios() {
+      try {
+        const resposta = await fetch(API_URL)
+        const dados = await resposta.json()
+        
+        const lista = document.getElementById("lista")
+        lista.innerHTML = ""
+        
+        if (dados.length === 0) {
+          lista.innerHTML = "<li>Nenhum usuário cadastrado.</li>"
+          return
+        }
+        
+        dados.forEach(usuario => {
+          const li = document.createElement("li")
+          li.innerHTML = `
+        <strong>Nome:</strong> ${usuario.nameUser} <br>
+        <strong>Email:</strong> ${usuario.emailUser} <br>
+        <strong>Número:</strong> ${usuario.numberUser ?? "Não informado"}
+      `
+          lista.appendChild(li)
+        })
+        
+      } catch (erro) {
+        alert("Erro ao buscar usuários")
+      }
+    }
+    
+  </script>
+  
+</body>
+
+</html>
